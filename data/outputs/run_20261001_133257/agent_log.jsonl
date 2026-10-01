@@ -1,0 +1,7 @@
+{"agent": "fleet_agent", "status": "ok", "duration_s": 0.0034, "warnings": [], "metrics": {"n_usable_vehicles": 4.0, "n_trips": 4.0, "peak_concurrent_demand": 3.0}, "timestamp": "2026-10-01T13:32:56.909790"}
+{"agent": "battery_agent", "status": "ok", "duration_s": 0.0011, "warnings": [], "metrics": {"total_battery_capacity_kwh": 256.68, "avg_soh": 0.9504999999999999, "n_low_soc_alerts": 0.0}, "timestamp": "2026-10-01T13:32:56.910887"}
+{"agent": "route_agent", "status": "ok", "duration_s": 0.0109, "warnings": [], "metrics": {"total_trip_energy_kwh": 94.50200000000001, "avg_eligible_vehicles_per_trip": 2.5}, "timestamp": "2026-10-01T13:32:56.921795"}
+{"agent": "charging_agent", "status": "ok", "duration_s": 0.0029, "warnings": [], "metrics": {"site_limit_kw": 90.0, "net_energy_needed_kwh": 138.36599999999999, "site_max_deliverable_kwh": 1080.0}, "timestamp": "2026-10-01T13:32:56.924756"}
+{"agent": "cost_agent", "status": "ok", "duration_s": 0.0016, "warnings": [], "metrics": {"min_price": 4.267, "max_price": 10.77, "price_spread": 6.502999999999999}, "timestamp": "2026-10-01T13:32:56.926409"}
+{"agent": "optimization_agent", "status": "ok", "duration_s": 0.5442, "warnings": [], "metrics": {"savings_abs": 5720.7, "savings_pct": 83.8, "baseline_operating_cost": 6827.48, "optimized_operating_cost": 1106.78}, "timestamp": "2026-10-01T13:32:57.470651"}
+{"agent": "recommendation_agent", "status": "ok", "duration_s": 0.0089, "warnings": [], "metrics": {"n_recommendations": 6.0, "n_critical": 0.0, "n_warning": 4.0}, "timestamp": "2026-10-01T13:32:57.479594"}

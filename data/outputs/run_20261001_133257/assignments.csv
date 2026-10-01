@@ -1,0 +1,9 @@
+trip_id,vehicle_id,served,required_energy_kwh,departure_soc_pct,plan
+TRIP-004,EV-002,True,34.444,34.7,baseline
+TRIP-001,EV-003,True,23.115,51.9,baseline
+TRIP-002,EV-001,True,21.75,49.1,baseline
+TRIP-003,EV-002,True,23.581,34.7,baseline
+TRIP-001,EV-004,True,22.248,74.6,optimized
+TRIP-002,EV-003,True,14.784,52.4,optimized
+TRIP-003,EV-002,True,23.581,35.4,optimized
+TRIP-004,EV-002,True,34.444,44.8,optimized

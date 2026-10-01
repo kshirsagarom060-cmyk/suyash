@@ -1,0 +1,83 @@
+[
+  {
+    "id": "REC-001",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-004 on TRIP-001",
+    "detail": "Vehicle EV-004 departs with only 0.0 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-004",
+    "trip_id": "TRIP-001",
+    "evidence": {
+      "margin_kwh": 0.0,
+      "usable_capacity_kwh": 37.32,
+      "departure_soc_pct": 74.6
+    }
+  },
+  {
+    "id": "REC-002",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-003 on TRIP-002",
+    "detail": "Vehicle EV-003 departs with only 0.0 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-003",
+    "trip_id": "TRIP-002",
+    "evidence": {
+      "margin_kwh": 0.0,
+      "usable_capacity_kwh": 39.56,
+      "departure_soc_pct": 52.4
+    }
+  },
+  {
+    "id": "REC-003",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-002 on TRIP-003",
+    "detail": "Vehicle EV-002 departs with only 0.0 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-002",
+    "trip_id": "TRIP-003",
+    "evidence": {
+      "margin_kwh": 0.0,
+      "usable_capacity_kwh": 115.68,
+      "departure_soc_pct": 35.4
+    }
+  },
+  {
+    "id": "REC-004",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-002 on TRIP-004",
+    "detail": "Vehicle EV-002 departs with only 0.0 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-002",
+    "trip_id": "TRIP-004",
+    "evidence": {
+      "margin_kwh": 0.0,
+      "usable_capacity_kwh": 115.68,
+      "departure_soc_pct": 44.8
+    }
+  },
+  {
+    "id": "REC-005",
+    "severity": "info",
+    "category": "load_shifting",
+    "title": "Smart Off-Peak Load Shifting",
+    "detail": "Shifted 70.9 kWh of charging from high-tariff peak slots to low-cost off-peak windows.",
+    "evidence": {
+      "kwh_shifted": 70.93,
+      "savings_abs": 5720.7
+    }
+  },
+  {
+    "id": "REC-006",
+    "severity": "info",
+    "category": "cost_reduction",
+    "title": "Total Operating Cost Savings: INR 5720.70",
+    "detail": "Optimized smart charging achieves 83.8% reduction in total operating costs compared to unmanaged baseline charging.",
+    "evidence": {
+      "savings_abs": 5720.7,
+      "savings_pct": 83.8,
+      "energy_cost_saved": 866.25,
+      "demand_cost_saved": 4776.0,
+      "wear_cost_saved": 78.45
+    }
+  }
+]

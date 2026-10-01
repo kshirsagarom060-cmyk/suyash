@@ -1,0 +1,74 @@
+{
+  "baseline": {
+    "energy_kwh_grid": 1245.83,
+    "energy_cost": 8725.13,
+    "demand_cost": 17010.0,
+    "wear_cost": 1038.42,
+    "unserved_penalty": 868000.0,
+    "end_shortfall_kwh": 53.96,
+    "end_shortfall_penalty": 269.78,
+    "operating_cost": 26773.56,
+    "total_cost": 895043.34,
+    "peak_kw": 113.4,
+    "avg_price_paid": 7.003,
+    "trips_total": 35,
+    "trips_served": 17,
+    "trips_unserved": 18,
+    "min_departure_margin_kwh": -36.32,
+    "charger_utilization": {
+      "AC": 0.609,
+      "DC": 0.339
+    },
+    "energy_by_period_kwh": {
+      "offpeak": 574.42,
+      "shoulder": 262.79,
+      "peak": 408.62
+    },
+    "peak_period_share_pct": 32.8,
+    "high_soc_vehicle_hours": 475.2
+  },
+  "optimized": {
+    "energy_kwh_grid": 381.47,
+    "energy_cost": 2485.12,
+    "demand_cost": 3732.0,
+    "wear_cost": 299.93,
+    "unserved_penalty": 714000.0,
+    "end_shortfall_kwh": 502.06,
+    "end_shortfall_penalty": 2510.28,
+    "operating_cost": 6517.05,
+    "total_cost": 723027.34,
+    "peak_kw": 24.88,
+    "avg_price_paid": 6.515,
+    "trips_total": 35,
+    "trips_served": 16,
+    "trips_unserved": 19,
+    "min_departure_margin_kwh": 0.0,
+    "charger_utilization": {
+      "AC": 0.05,
+      "DC": 0.302
+    },
+    "energy_by_period_kwh": {
+      "offpeak": 186.59,
+      "shoulder": 116.18,
+      "peak": 78.7
+    },
+    "peak_period_share_pct": 20.6,
+    "high_soc_vehicle_hours": 4.0
+  },
+  "savings": {
+    "abs": 20256.51,
+    "pct": 75.7,
+    "energy_cost_abs": 6240.01,
+    "demand_cost_abs": 13278.0,
+    "wear_cost_abs": 738.49,
+    "kwh_shifted_out_of_peak": 329.92
+  },
+  "solver": {
+    "status": "Optimal",
+    "objective": 723031.97,
+    "runtime_s": 26.593,
+    "n_variables": 15853,
+    "n_constraints": 14461,
+    "method": "milp_pulp_cbc"
+  }
+}

@@ -1,0 +1,9 @@
+charger_id,depot_id,type,max_kw,efficiency,derate_factor,source
+CH-AC-01,DEPOT-01,AC,11.0,0.92,1.0,simulated
+CH-AC-02,DEPOT-01,AC,11.0,0.92,1.0,simulated
+CH-AC-03,DEPOT-01,AC,11.0,0.92,1.0,simulated
+CH-AC-04,DEPOT-01,AC,11.0,0.92,1.0,simulated
+CH-AC-05,DEPOT-01,AC,11.0,0.92,1.0,simulated
+CH-AC-06,DEPOT-01,AC,11.0,0.92,1.0,simulated
+CH-DC-01,DEPOT-01,DC,30.0,0.94,0.85,simulated
+CH-DC-02,DEPOT-01,DC,30.0,0.94,0.85,simulated

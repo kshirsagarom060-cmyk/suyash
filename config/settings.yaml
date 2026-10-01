@@ -1,0 +1,39 @@
+random_seed: 42
+currency: INR
+horizon:
+  plan_date: "auto"        # "auto" = tomorrow's date
+  start_time: "18:00"
+  slot_minutes: 15
+  n_slots: 96
+fleet:
+  n_vehicles: 20
+  n_depots: 1
+  vehicle_mix: {van_small: 0.4, van_large: 0.4, truck: 0.2}
+chargers:
+  ac: {count: 6, power_kw: 11.0, efficiency: 0.92}
+  dc: {count: 2, power_kw: 30.0, efficiency: 0.94, derate_factor: 0.85}
+site:
+  limit_kw: 90.0
+battery:
+  reserve_soc_pct: 15         # never plan to go below this
+  daily_ceiling_pct: 90       # normal charge ceiling for battery health
+  high_soc_threshold_pct: 80  # dwelling above this adds wear cost
+  end_of_horizon_target_pct: 60
+trips:
+  safety_margin: 0.10
+  turnaround_slots: 2
+tariff:
+  offpeak: {hours: "22:00-06:00", price: 4.5}
+  shoulder: {hours: "06:00-18:00", price: 7.0}
+  peak: {hours: "18:00-22:00", price: 10.5}
+  demand_charge_per_kw: 150.0   # applied once per plan to the peak site kW
+  noise_pct: 3
+costs:
+  wear_cost_per_kwh_throughput: 0.8
+  wear_cost_per_kwh_slot_above_threshold: 0.02
+  unserved_trip_penalty: {1: 100000, 2: 30000, 3: 8000}   # by priority
+  end_target_shortfall_penalty_per_kwh: 5.0
+weights: {unavailability: 1.0, battery_wear: 1.0, violations: 1.0}
+solver: {name: cbc, time_limit_s: 60, mip_gap: 0.01, threads: 4}
+external: {use_real_weather: false, use_real_routing: false, use_real_tariff: false}
+llm: {enabled: false, provider: gemini, model: "gemini-2.0-flash"}

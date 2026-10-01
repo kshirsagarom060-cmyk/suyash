@@ -1,0 +1,11 @@
+services:
+  ev-fleet-optimizer:
+    build: .
+    container_name: ev-fleet-optimizer
+    ports:
+      - "8501:8501"
+    environment:
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+    restart: unless-stopped

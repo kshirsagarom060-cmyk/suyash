@@ -1,0 +1,197 @@
+[
+  {
+    "id": "REC-006",
+    "severity": "critical",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 1 Trip: TRIP-009",
+    "detail": "Trip TRIP-009 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-009",
+    "evidence": {
+      "priority": 1,
+      "distance_km": 48.6,
+      "payload_kg": 2836.0
+    }
+  },
+  {
+    "id": "REC-016",
+    "severity": "critical",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 1 Trip: TRIP-028",
+    "detail": "Trip TRIP-028 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-028",
+    "evidence": {
+      "priority": 1,
+      "distance_km": 74.3,
+      "payload_kg": 2147.0
+    }
+  },
+  {
+    "id": "REC-017",
+    "severity": "critical",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 1 Trip: TRIP-030",
+    "detail": "Trip TRIP-030 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-030",
+    "evidence": {
+      "priority": 1,
+      "distance_km": 81.4,
+      "payload_kg": 1269.0
+    }
+  },
+  {
+    "id": "REC-001",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-001",
+    "detail": "Trip TRIP-001 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-001",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 74.3,
+      "payload_kg": 2147.0
+    }
+  },
+  {
+    "id": "REC-002",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-002",
+    "detail": "Trip TRIP-002 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-002",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 51.5,
+      "payload_kg": 1211.0
+    }
+  },
+  {
+    "id": "REC-003",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-003",
+    "detail": "Trip TRIP-003 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-003",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 81.4,
+      "payload_kg": 1269.0
+    }
+  },
+  {
+    "id": "REC-004",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 3 Trip: TRIP-004",
+    "detail": "Trip TRIP-004 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-004",
+    "evidence": {
+      "priority": 3,
+      "distance_km": 50.5,
+      "payload_kg": 1248.0
+    }
+  },
+  {
+    "id": "REC-005",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-006",
+    "detail": "Trip TRIP-006 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-006",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 47.7,
+      "payload_kg": 2617.0
+    }
+  },
+  {
+    "id": "REC-007",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-010",
+    "detail": "Trip TRIP-010 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-010",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 50.3,
+      "payload_kg": 2877.0
+    }
+  },
+  {
+    "id": "REC-008",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-011",
+    "detail": "Trip TRIP-011 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-011",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 73.5,
+      "payload_kg": 2545.0
+    }
+  },
+  {
+    "id": "REC-009",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 3 Trip: TRIP-012",
+    "detail": "Trip TRIP-012 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-012",
+    "evidence": {
+      "priority": 3,
+      "distance_km": 29.8,
+      "payload_kg": 2930.0
+    }
+  },
+  {
+    "id": "REC-010",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-013",
+    "detail": "Trip TRIP-013 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-013",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 42.9,
+      "payload_kg": 1639.0
+    }
+  },
+  {
+    "id": "REC-011",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-018",
+    "detail": "Trip TRIP-018 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-018",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 36.4,
+      "payload_kg": 2234.0
+    }
+  },
+  {
+    "id": "REC-012",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-020",
+    "detail": "Trip TRIP-020 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-020",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 85.3,
+      "payload_kg": 1964.0
+    }
+  },
+  {
+    "id": "REC-013",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-023",
+    "detail": "Trip TRIP-023 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-023",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 64.8,
+      "payload_kg": 1775.0
+    }
+  }
+]

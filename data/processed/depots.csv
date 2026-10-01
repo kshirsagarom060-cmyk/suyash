@@ -1,0 +1,2 @@
+depot_id,name,site_limit_kw,lat,lon,source
+DEPOT-01,Depot 1,90.0,28.6139,77.209,simulated

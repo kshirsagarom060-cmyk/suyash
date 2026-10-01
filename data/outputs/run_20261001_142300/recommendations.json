@@ -1,0 +1,204 @@
+[
+  {
+    "id": "REC-001",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-001",
+    "detail": "Trip TRIP-001 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-001",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 53.4,
+      "payload_kg": 1558.0
+    }
+  },
+  {
+    "id": "REC-002",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-002",
+    "detail": "Trip TRIP-002 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-002",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 75.1,
+      "payload_kg": 1257.0
+    }
+  },
+  {
+    "id": "REC-003",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-004",
+    "detail": "Trip TRIP-004 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-004",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 73.5,
+      "payload_kg": 2030.0
+    }
+  },
+  {
+    "id": "REC-004",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 3 Trip: TRIP-007",
+    "detail": "Trip TRIP-007 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-007",
+    "evidence": {
+      "priority": 3,
+      "distance_km": 110.7,
+      "payload_kg": 2525.0
+    }
+  },
+  {
+    "id": "REC-005",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 3 Trip: TRIP-011",
+    "detail": "Trip TRIP-011 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-011",
+    "evidence": {
+      "priority": 3,
+      "distance_km": 72.8,
+      "payload_kg": 2840.0
+    }
+  },
+  {
+    "id": "REC-006",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 3 Trip: TRIP-013",
+    "detail": "Trip TRIP-013 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-013",
+    "evidence": {
+      "priority": 3,
+      "distance_km": 108.7,
+      "payload_kg": 2955.0
+    }
+  },
+  {
+    "id": "REC-007",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 3 Trip: TRIP-017",
+    "detail": "Trip TRIP-017 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-017",
+    "evidence": {
+      "priority": 3,
+      "distance_km": 52.8,
+      "payload_kg": 3141.0
+    }
+  },
+  {
+    "id": "REC-008",
+    "severity": "warning",
+    "category": "trip_unserved",
+    "title": "Unserved Priority 2 Trip: TRIP-018",
+    "detail": "Trip TRIP-018 could not be served due to vehicle range, payload, or depot constraints.",
+    "trip_id": "TRIP-018",
+    "evidence": {
+      "priority": 2,
+      "distance_km": 68.1,
+      "payload_kg": 2130.0
+    }
+  },
+  {
+    "id": "REC-009",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-013 on TRIP-003",
+    "detail": "Vehicle EV-013 departs with only 0.8 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-013",
+    "trip_id": "TRIP-003",
+    "evidence": {
+      "margin_kwh": 0.79,
+      "usable_capacity_kwh": 66.15,
+      "departure_soc_pct": 45.7
+    }
+  },
+  {
+    "id": "REC-010",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-003 on TRIP-005",
+    "detail": "Vehicle EV-003 departs with only 0.0 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-003",
+    "trip_id": "TRIP-005",
+    "evidence": {
+      "margin_kwh": 0.0,
+      "usable_capacity_kwh": 113.64,
+      "departure_soc_pct": 29.0
+    }
+  },
+  {
+    "id": "REC-011",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-020 on TRIP-006",
+    "detail": "Vehicle EV-020 departs with only 0.0 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-020",
+    "trip_id": "TRIP-006",
+    "evidence": {
+      "margin_kwh": 0.0,
+      "usable_capacity_kwh": 118.32,
+      "departure_soc_pct": 89.0
+    }
+  },
+  {
+    "id": "REC-012",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-011 on TRIP-008",
+    "detail": "Vehicle EV-011 departs with only 0.2 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-011",
+    "trip_id": "TRIP-008",
+    "evidence": {
+      "margin_kwh": 0.23,
+      "usable_capacity_kwh": 66.92,
+      "departure_soc_pct": 27.9
+    }
+  },
+  {
+    "id": "REC-013",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-012 on TRIP-010",
+    "detail": "Vehicle EV-012 departs with only 0.2 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-012",
+    "trip_id": "TRIP-010",
+    "evidence": {
+      "margin_kwh": 0.18,
+      "usable_capacity_kwh": 34.68,
+      "departure_soc_pct": 49.5
+    }
+  },
+  {
+    "id": "REC-014",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-003 on TRIP-014",
+    "detail": "Vehicle EV-003 departs with only 2.9 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-003",
+    "trip_id": "TRIP-014",
+    "evidence": {
+      "margin_kwh": 2.91,
+      "usable_capacity_kwh": 113.64,
+      "departure_soc_pct": 79.9
+    }
+  },
+  {
+    "id": "REC-015",
+    "severity": "warning",
+    "category": "thin_margin",
+    "title": "Low Departure Buffer for EV-005 on TRIP-015",
+    "detail": "Vehicle EV-005 departs with only 0.0 kWh buffer above minimum reserve.",
+    "vehicle_id": "EV-005",
+    "trip_id": "TRIP-015",
+    "evidence": {
+      "margin_kwh": 0.0,
+      "usable_capacity_kwh": 118.08,
+      "departure_soc_pct": 37.2
+    }
+  }
+]

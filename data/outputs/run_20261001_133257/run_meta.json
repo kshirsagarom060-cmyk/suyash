@@ -1,0 +1,107 @@
+{
+  "run_id": "run_20261001_133257",
+  "timestamp": "2026-10-01T13:32:57.479900",
+  "random_seed": 42,
+  "config": {
+    "random_seed": 42,
+    "currency": "INR",
+    "horizon": {
+      "plan_date": "auto",
+      "start_time": "18:00",
+      "slot_minutes": 15,
+      "n_slots": 48
+    },
+    "fleet": {
+      "n_vehicles": 4,
+      "n_depots": 1,
+      "vehicle_mix": {
+        "van_small": 0.4,
+        "van_large": 0.4,
+        "truck": 0.2
+      }
+    },
+    "chargers": {
+      "ac": {
+        "count": 6,
+        "power_kw": 11.0,
+        "efficiency": 0.92,
+        "derate_factor": 1.0
+      },
+      "dc": {
+        "count": 2,
+        "power_kw": 30.0,
+        "efficiency": 0.94,
+        "derate_factor": 0.85
+      }
+    },
+    "site": {
+      "limit_kw": 90.0
+    },
+    "battery": {
+      "reserve_soc_pct": 15.0,
+      "daily_ceiling_pct": 90.0,
+      "high_soc_threshold_pct": 80.0,
+      "end_of_horizon_target_pct": 60.0
+    },
+    "trips": {
+      "safety_margin": 0.1,
+      "turnaround_slots": 2
+    },
+    "tariff": {
+      "offpeak": {
+        "hours": "22:00-06:00",
+        "price": 4.5
+      },
+      "shoulder": {
+        "hours": "06:00-18:00",
+        "price": 7.0
+      },
+      "peak": {
+        "hours": "18:00-22:00",
+        "price": 10.5
+      },
+      "demand_charge_per_kw": 150.0,
+      "noise_pct": 3.0
+    },
+    "costs": {
+      "wear_cost_per_kwh_throughput": 0.8,
+      "wear_cost_per_kwh_slot_above_threshold": 0.02,
+      "unserved_trip_penalty": {
+        "1": 100000.0,
+        "2": 30000.0,
+        "3": 8000.0
+      },
+      "end_target_shortfall_penalty_per_kwh": 5.0
+    },
+    "weights": {
+      "unavailability": 1.0,
+      "battery_wear": 1.0,
+      "violations": 1.0
+    },
+    "solver": {
+      "name": "cbc",
+      "time_limit_s": 5,
+      "mip_gap": 0.01,
+      "threads": 4
+    },
+    "external": {
+      "use_real_weather": false,
+      "use_real_routing": false,
+      "use_real_tariff": false
+    },
+    "llm": {
+      "enabled": false,
+      "provider": "gemini",
+      "model": "gemini-2.0-flash"
+    }
+  },
+  "data_sources": {
+    "depots": "simulated",
+    "chargers": "simulated",
+    "vehicles": "simulated",
+    "weather": "simulated",
+    "tariffs": "simulated",
+    "trips": "simulated"
+  },
+  "executive_summary": "The optimization plan successfully evaluated 4 of 4 trips with total operating cost of INR 1106.78 (vs INR 6827.48 baseline), saving INR 5720.70 (83.8%). A total of 70.9 kWh of charging was shifted out of peak tariff windows to off-peak periods, maintaining zero hard constraint violations."
+}
