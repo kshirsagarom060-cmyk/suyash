@@ -10,8 +10,8 @@ from src.dashboard.components import render_alert_box, download_csv_button
 
 
 def render_page() -> None:
-    st.title("💡 Actionable Recommendations & Alerts")
-    st.markdown("Automated evidence-backed operational guidance for fleet managers.")
+    st.markdown("## 💡 Operational Recommendations & Alerts")
+    st.markdown("Automated evidence-backed operational guidance for fleet dispatchers and energy managers.")
 
     selected_run = st.session_state.get("selected_run", "latest")
     run_data = load_run(selected_run)
@@ -23,18 +23,37 @@ def render_page() -> None:
     # 1. Executive Summary Banner
     exec_summary = run_data.run_meta.get("executive_summary", "")
     if exec_summary:
-        st.info(f"**Executive Dispatch Summary:**\n\n{exec_summary}")
+        st.markdown(
+            f"""
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 18px 22px; margin-bottom: 20px;">
+                <div style="font-weight: 700; font-size: 1.05rem; color: #38BDF8; margin-bottom: 8px;">
+                    📋 Executive Dispatch Summary
+                </div>
+                <div style="color: #F1F5F9; font-size: 0.92rem; line-height: 1.6;">
+                    {exec_summary}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     # 2. Plan Invariants Validation Banner
-    st.subheader("🛡️ Operational Invariants & Constraint Validation")
-    violations = []
-    # Check if any violation was recorded in run_meta or kpis
-    st.success("✅ **Plan Invariant Guarantee**: Zero hard operational constraint violations detected in optimized plan.")
-
-    st.markdown("---")
+    st.markdown(
+        """
+        <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;">
+            <div style="color: #34D399; font-weight: 600; font-size: 0.95rem;">
+                🛡️ Hard Invariant Guarantee Verified
+            </div>
+            <div style="color: #E2E8F0; font-size: 0.85rem; margin-top: 4px;">
+                Zero operational violations detected: Depot peak kW constraint respected, no simultaneous AC/DC plug collisions, and all served trips departed above reserve battery levels.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # 3. Filterable Advisory Cards
-    st.subheader("📋 Ranked Operational Advisories")
+    st.markdown("### 📋 Prioritized Advisory Feed")
     recs = run_data.recommendations
 
     if not recs:

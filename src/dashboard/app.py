@@ -15,7 +15,7 @@ import pandas as pd
 
 from src.common.config import load_config
 from src.dashboard.data_access import list_runs, load_run
-from src.dashboard.components import render_custom_css, render_data_source_badge
+from src.dashboard.components import render_custom_css, render_hero_banner, render_data_source_badge
 from src.agents.orchestrator import run_pipeline
 
 # Page Configuration
@@ -30,10 +30,26 @@ render_custom_css()
 
 
 def main() -> None:
+    # Top Hero Branding Header
+    render_hero_banner(
+        title="⚡ AI Energy & EV Fleet Optimization Agent",
+        subtitle="Commercial EV Fleet Smart Charging, Route Feasibility & Time-of-Use Cost Minimization",
+        badge_text="Operational • CBC MILP Engine",
+    )
+
     # Sidebar Navigation & Execution Controls
     with st.sidebar:
-        st.title("⚡ EV Fleet Optimizer")
-        st.caption("AI Decision-Support System")
+        st.markdown(
+            """
+            <div style="padding: 10px 0 15px 0;">
+                <div style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; color: #FFFFFF;">
+                    ⚡ Fleet Control Center
+                </div>
+                <div style="font-size: 0.8rem; color: #9CA3AF;">Smart Energy Management</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         st.markdown("---")
 
         # Available Runs Selector
@@ -42,7 +58,7 @@ def main() -> None:
             st.session_state["selected_run"] = available_runs[0] if available_runs else "latest"
 
         sel_run = st.selectbox(
-            "Select Run Output",
+            "📁 Active Run Snapshot",
             options=available_runs if available_runs else ["latest"],
             index=0 if available_runs else 0,
         )
@@ -51,15 +67,23 @@ def main() -> None:
         st.markdown("---")
 
         # Pipeline Quick Runner
-        st.subheader("🚀 Run Optimization")
+        st.markdown("### ⚡ Quick Scenario Run")
         scenario_select = st.selectbox(
-            "Scenario Preset",
+            "Select Scenario Preset",
             options=["base", "price_spike", "charger_outage", "heavy_demand", "low_battery_fleet", "site_constraint"],
             index=0,
+            format_func=lambda s: {
+                "base": "Base Normal Operations",
+                "price_spike": "Tariff Price Spike (2.5x)",
+                "charger_outage": "Depot Charger Outage",
+                "heavy_demand": "Surge Delivery Demand (+30%)",
+                "low_battery_fleet": "Low Fleet Battery State",
+                "site_constraint": "Restricted Substation Limit",
+            }.get(s, s),
         )
 
-        if st.button("⚡ Run Full Pipeline", type="primary", use_container_width=True):
-            with st.spinner("Executing 7-agent pipeline..."):
+        if st.button("🚀 Optimize Fleet Now", type="primary", use_container_width=True):
+            with st.spinner("Executing 7-agent optimization pipeline..."):
                 try:
                     cfg = load_config()
                     if scenario_select != "base":
@@ -72,7 +96,7 @@ def main() -> None:
                         res = run_pipeline(config=cfg)
 
                     st.session_state["selected_run"] = "latest"
-                    st.success("Optimization finished!")
+                    st.success("Optimization finished successfully!")
                     st.rerun()
                 except Exception as e:
                     st.error(f"Execution failed: {e}")
@@ -83,14 +107,17 @@ def main() -> None:
         current_data = load_run(st.session_state["selected_run"])
         if current_data and current_data.run_meta:
             meta = current_data.run_meta
-            st.caption(f"**Last Run:** {meta.get('timestamp', 'N/A')[:19]}")
-            st.caption(f"**Method:** {current_data.kpis.get('solver', {}).get('method', 'CBC MILP')}")
-            st.caption(f"**Status:** {current_data.kpis.get('solver', {}).get('status', 'Optimal')}")
-
-            sources = meta.get("data_sources", {})
-            st.markdown("**Data Sources:**")
-            for table_name, src in list(sources.items())[:3]:
-                st.caption(f"• `{table_name}`: {src}")
+            st.markdown(
+                f"""
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px; font-size: 0.8rem;">
+                    <div style="color: #9CA3AF; margin-bottom: 4px;">SYSTEM STATUS</div>
+                    <div>• <b>Last Run:</b> {meta.get('timestamp', 'N/A')[:19]}</div>
+                    <div>• <b>Solver:</b> {current_data.kpis.get('solver', {}).get('method', 'CBC MILP')}</div>
+                    <div>• <b>Status:</b> <span style="color: #10B981;">{current_data.kpis.get('solver', {}).get('status', 'Optimal')}</span></div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     # Top-level Page Navigation
     pages = {
@@ -102,7 +129,7 @@ def main() -> None:
         "🧪 Scenario Lab": "src/dashboard/pages/06_scenarios.py",
     }
 
-    selected_page_name = st.sidebar.radio("Navigation", list(pages.keys()))
+    selected_page_name = st.sidebar.radio("Navigation Menu", list(pages.keys()))
 
     # Render selected page
     if selected_page_name == "📊 Fleet Overview":
@@ -124,11 +151,11 @@ def main() -> None:
         from src.dashboard.pages import scenarios
         scenarios.render_page()
 
-    # Footer
+    # Clean Modern Footer
     st.markdown("---")
     st.markdown(
-        "<div style='text-align: center; color: #6B7280; font-size: 0.8rem;'>"
-        "AI Energy & EV Fleet Optimization Agent • Deterministic Cost Optimization Engine"
+        "<div style='text-align: center; color: #64748B; font-size: 0.82rem; padding: 12px 0;'>"
+        "⚡ AI Energy & EV Fleet Optimization Agent • Deterministic Cost Optimization Engine"
         "</div>",
         unsafe_allow_html=True,
     )

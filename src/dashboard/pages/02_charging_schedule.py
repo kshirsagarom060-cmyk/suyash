@@ -11,7 +11,7 @@ from src.dashboard.charts import charging_gantt, price_band, site_load, vehicle_
 
 
 def render_page() -> None:
-    st.title("⚡ Smart Charging Schedule & Grid Load")
+    st.markdown("## ⚡ Smart Charging Schedule & Grid Load")
     st.markdown("Inspect time-of-use shifted charging schedules, site power limits, and vehicle battery trajectories.")
 
     selected_run = st.session_state.get("selected_run", "latest")
@@ -21,21 +21,25 @@ def render_page() -> None:
         st.warning("No charging schedule data found. Please run optimization first.")
         return
 
-    # Plan Toggle Selector
+    # Top Perspective & Peak Power Metrics
     col_t1, col_t2 = st.columns([2, 1])
     with col_t1:
         plan_choice = st.radio(
-            "Select Plan Perspective",
+            "Schedule Perspective",
             options=["Optimized", "Baseline", "Compare"],
             index=0,
             horizontal=True,
         )
     with col_t2:
-        st.metric(
-            "Peak Grid Demand",
-            f"{run_data.site_load[run_data.site_load['plan'] == 'optimized']['site_kw'].max():.1f} kW" if not run_data.site_load.empty else "N/A",
-            delta=f"-{run_data.site_load[run_data.site_load['plan'] == 'baseline']['site_kw'].max() - run_data.site_load[run_data.site_load['plan'] == 'optimized']['site_kw'].max():.1f} kW vs Baseline" if not run_data.site_load.empty else None,
-        )
+        if not run_data.site_load.empty:
+            opt_peak = run_data.site_load[run_data.site_load['plan'] == 'optimized']['site_kw'].max()
+            base_peak = run_data.site_load[run_data.site_load['plan'] == 'baseline']['site_kw'].max()
+            shaved = base_peak - opt_peak
+            st.metric(
+                "Peak Grid Demand",
+                f"{opt_peak:.1f} kW",
+                delta=f"-{shaved:.1f} kW peak shaved" if shaved > 0 else "0 kW shaved",
+            )
 
     plan_key = plan_choice.lower()
     active_plan = "optimized" if plan_key == "compare" else plan_key
@@ -53,7 +57,7 @@ def render_page() -> None:
         st.plotly_chart(price_band(tariffs_df), use_container_width=True)
 
     # 3. Aggregate Site Load
-    st.subheader("🔌 Aggregate Site Power vs Station Capacity")
+    st.markdown("### 🔌 Aggregate Site Power vs Station Capacity")
     site_lim = float(run_data.tables.get("depots", pd.DataFrame({"site_limit_kw": [90.0]}))["site_limit_kw"].iloc[0])
     st.plotly_chart(
         site_load(run_data.site_load, plan_toggle=plan_key, site_limit_kw=site_lim),
@@ -61,20 +65,28 @@ def render_page() -> None:
     )
 
     # 4. Individual Vehicle Battery Drill-down
-    st.subheader("🔍 Vehicle Battery State Drill-Down")
+    st.markdown("### 🔍 Individual Vehicle Battery Trajectory")
     vehicles = sorted(run_data.soc["vehicle_id"].unique()) if not run_data.soc.empty else []
     if vehicles:
         col_v1, col_v2 = st.columns([1, 3])
         with col_v1:
-            sel_v = st.selectbox("Choose Vehicle", options=vehicles, index=0)
+            sel_v = st.selectbox("Select Vehicle", options=vehicles, index=0)
             v_info = run_data.tables.get("vehicles", pd.DataFrame())
             if not v_info.empty and sel_v in v_info.set_index("vehicle_id").index:
                 row = v_info.set_index("vehicle_id").loc[sel_v]
-                st.caption(f"**Model:** {row['model']}")
-                st.caption(f"**Capacity:** {row['battery_capacity_kwh']} kWh")
-                st.caption(f"**SOH:** {row['soh']*100:.1f}%")
-                st.caption(f"**Initial SOC:** {row['current_soc_pct']}%")
-                st.caption(f"**Available from:** Slot {row['available_from_slot']}")
+                st.markdown(
+                    f"""
+                    <div style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; font-size: 0.85rem;">
+                        <div style="color: #38BDF8; font-weight: 700; font-size: 1rem; margin-bottom: 6px;">{sel_v} Specs</div>
+                        <div>• <b>Model:</b> {row['model']}</div>
+                        <div>• <b>Capacity:</b> {row['battery_capacity_kwh']} kWh</div>
+                        <div>• <b>SOH:</b> {row['soh']*100:.1f}%</div>
+                        <div>• <b>Initial SOC:</b> {row['current_soc_pct']}%</div>
+                        <div>• <b>Depot Arrival:</b> Slot {row['available_from_slot']}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
         with col_v2:
             st.plotly_chart(
@@ -83,10 +95,19 @@ def render_page() -> None:
             )
 
     # 5. Charging Sessions Table
-    st.subheader("📑 Detailed Charging Sessions")
+    st.markdown("### 📑 Detailed Charging Sessions")
     plan_chg_table = run_data.charging[run_data.charging["plan"] == active_plan]
     if not plan_chg_table.empty:
-        st.dataframe(plan_chg_table, use_container_width=True)
+        st.dataframe(
+            plan_chg_table,
+            use_container_width=True,
+            column_config={
+                "power_kw_grid": st.column_config.NumberColumn("Grid Power (kW)", format="%.1f kW"),
+                "energy_to_battery_kwh": st.column_config.NumberColumn("Battery Energy (kWh)", format="%.2f kWh"),
+                "price_per_kwh": st.column_config.NumberColumn("Tariff (₹/kWh)", format="₹%.2f"),
+            },
+            hide_index=True,
+        )
         download_csv_button(plan_chg_table, f"charging_sessions_{active_plan}.csv", "📥 Export Sessions (CSV)")
 
 

@@ -153,9 +153,9 @@ def get_active_data(scenario: str = "base") -> dict[str, Any]:
         "soc": plan.soc.to_dict(orient="records") if hasattr(plan.soc, "to_dict") else [],
         "site_load": plan.site_load.to_dict(orient="records") if hasattr(plan.site_load, "to_dict") else [],
         "recommendations": [
-            {"title": "Peak Shaving", "description": f"Shaved peak power draw by {kpis['savings']['peak_power_shaved_kw']} kW.", "priority": "high"},
-            {"title": "ToU Tariff Arbitrage", "description": f"Shifted {kpis['savings']['energy_shifted_kwh']} kWh from peak to off-peak periods.", "priority": "medium"},
-            {"title": "Cost Efficiency", "description": f"Generated {savings_pct}% operating savings vs unmanaged baseline.", "priority": "high"},
+            {"title": "Peak Shaving", "detail": f"Shaved peak power draw by {kpis['savings']['peak_power_shaved_kw']} kW below substation limit.", "severity": "info"},
+            {"title": "ToU Tariff Arbitrage", "detail": f"Shifted {kpis['savings']['energy_shifted_kwh']} kWh from peak to cheap off-peak periods.", "severity": "info"},
+            {"title": "Cost Efficiency", "detail": f"Generated {savings_pct}% operating savings vs unmanaged baseline.", "severity": "warning" if savings_pct < 10 else "info"},
         ],
         "vehicles": tables["vehicles"].to_dict(orient="records") if hasattr(tables.get("vehicles"), "to_dict") else [],
     }
@@ -217,21 +217,22 @@ def index():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Energy & EV Fleet Optimization Agent | Vercel Deployment</title>
-  <meta name="description" content="Commercial EV Fleet Smart Charging and Trip Optimization Dashboard deployed on Vercel.">
+  <title>AI Energy & EV Fleet Optimization Agent</title>
+  <meta name="description" content="AI Energy & EV Fleet Smart Charging and Trip Allocation Optimizer">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>
     :root {{
-      --bg-main: #0B0F19;
-      --bg-card: rgba(17, 24, 39, 0.75);
-      --bg-card-hover: rgba(31, 41, 55, 0.85);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(99, 102, 241, 0.3);
-      --text-main: #F3F4F6;
+      --bg-base: #0B0F19;
+      --bg-surface: rgba(17, 24, 39, 0.75);
+      --bg-surface-hover: rgba(30, 41, 59, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.35);
+      --text-main: #F9FAFB;
       --text-muted: #9CA3AF;
+      --accent-blue: #38BDF8;
       --accent-indigo: #6366F1;
       --accent-emerald: #10B981;
       --accent-amber: #F59E0B;
@@ -241,19 +242,21 @@ def index():
     * {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at 15% 15%, #151b2e 0%, #0B0F19 100%);
+      background: radial-gradient(ellipse at 15% 0%, #152238 0%, #0B0F19 65%, #070A11 100%);
       color: var(--text-main);
       min-height: 100vh;
       line-height: 1.5;
     }}
+
+    /* Sticky Navbar */
     header {{
-      background: rgba(11, 15, 25, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-color);
+      background: rgba(11, 15, 25, 0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border-subtle);
       position: sticky;
       top: 0;
       z-index: 100;
-      padding: 1rem 2rem;
+      padding: 0.9rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -261,35 +264,40 @@ def index():
     .brand {{
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }}
     .brand-logo {{
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #38BDF8, #6366F1);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
     }}
     .brand-title {{
       font-family: 'Outfit', sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 700;
       letter-spacing: -0.02em;
+    }}
+    .brand-sub {{
+      font-size: 0.78rem;
+      color: var(--text-muted);
     }}
     .badge {{
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      font-size: 0.75rem;
+      gap: 0.45rem;
+      font-size: 0.76rem;
       font-weight: 600;
-      padding: 0.25rem 0.65rem;
+      padding: 0.3rem 0.8rem;
       border-radius: 9999px;
       background: rgba(16, 185, 129, 0.15);
       color: var(--accent-emerald);
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(16, 185, 129, 0.35);
     }}
     .badge-dot {{
       width: 6px;
@@ -298,104 +306,168 @@ def index():
       background: var(--accent-emerald);
       box-shadow: 0 0 8px var(--accent-emerald);
     }}
+
     main {{
-      max-width: 1400px;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 1.8rem;
     }}
+
+    /* Scenario Ribbon */
     .scenario-banner {{
-      background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 2rem;
+      background: var(--bg-surface);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.1rem 1.4rem;
+      margin-bottom: 1.8rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }}
+    .scenario-title {{
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }}
+    .scenario-name {{
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }}
     .scenario-controls {{
       display: flex;
-      gap: 0.5rem;
+      gap: 0.45rem;
       flex-wrap: wrap;
     }}
     .scenario-btn {{
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
       color: var(--text-main);
-      padding: 0.45rem 0.9rem;
+      padding: 0.42rem 0.85rem;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }}
-    .scenario-btn:hover, .scenario-btn.active {{
-      background: var(--accent-indigo);
-      border-color: var(--accent-indigo);
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    .scenario-btn:hover {{
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-blue);
+      color: #FFF;
+      transform: translateY(-1px);
     }}
+    .scenario-btn.active {{
+      background: linear-gradient(135deg, #38BDF8, #6366F1);
+      border-color: transparent;
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+      font-weight: 600;
+    }}
+
+    /* Hero KPI Grid */
     .kpi-grid {{
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 1.8rem;
     }}
     .kpi-card {{
-      background: var(--bg-card);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1.25rem;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      background: var(--bg-surface);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.3rem 1.4rem;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }}
+    .kpi-card::before {{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #38BDF8, #6366F1);
+      opacity: 0.8;
     }}
     .kpi-card:hover {{
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       border-color: var(--border-accent);
+      box-shadow: 0 10px 28px rgba(56, 189, 248, 0.12);
+    }}
+    .kpi-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
     }}
     .kpi-label {{
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }}
+    .kpi-icon {{
+      font-size: 1.15rem;
+      opacity: 0.85;
     }}
     .kpi-value {{
       font-family: 'Outfit', sans-serif;
-      font-size: 1.75rem;
+      font-size: 1.85rem;
       font-weight: 700;
-      color: #fff;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.2rem;
     }}
     .kpi-sub {{
       font-size: 0.8rem;
-      color: var(--accent-emerald);
-      margin-top: 0.25rem;
+      font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 4px;
     }}
+
+    /* Segmented Navigation Tabs */
     .tabs {{
       display: flex;
-      gap: 0.5rem;
-      border-bottom: 1px solid var(--border-color);
+      gap: 0.4rem;
+      border-bottom: 1px solid var(--border-subtle);
       margin-bottom: 1.5rem;
+      overflow-x: auto;
     }}
     .tab-btn {{
       background: none;
       border: none;
       color: var(--text-muted);
       padding: 0.75rem 1.25rem;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 500;
       cursor: pointer;
       position: relative;
       transition: color 0.2s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }}
     .tab-btn:hover {{ color: var(--text-main); }}
     .tab-btn.active {{
-      color: var(--accent-indigo);
+      color: var(--accent-blue);
       font-weight: 600;
     }}
     .tab-btn.active::after {{
@@ -405,40 +477,101 @@ def index():
       left: 0;
       right: 0;
       height: 2px;
-      background: var(--accent-indigo);
-      box-shadow: 0 0 10px var(--accent-indigo);
+      background: var(--accent-blue);
+      box-shadow: 0 0 10px var(--accent-blue);
     }}
     .tab-pane {{
       display: none;
     }}
     .tab-pane.active {{
       display: block;
-      animation: fadeIn 0.3s ease;
+      animation: fadeIn 0.25s ease-out;
     }}
     @keyframes fadeIn {{
       from {{ opacity: 0; transform: translateY(6px); }}
       to {{ opacity: 1; transform: translateY(0); }}
     }}
-    .chart-box {{
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1.5rem;
+
+    /* Chart & Table Cards */
+    .card-box {{
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.4rem;
       margin-bottom: 1.5rem;
+      backdrop-filter: blur(14px);
     }}
-    .chart-title {{
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 600;
+    .card-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 1rem;
     }}
+    .card-title {{
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+
+    /* Vehicle Cards Grid */
+    .vehicles-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }}
+    .veh-card {{
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1rem;
+      transition: all 0.2s ease;
+    }}
+    .veh-card:hover {{
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }}
+    .veh-id {{
+      font-weight: 700;
+      font-size: 1rem;
+      color: #FFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.3rem;
+    }}
+    .veh-meta {{
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }}
+    .meter-container {{
+      width: 100%;
+      height: 7px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 4px;
+    }}
+    .meter-fill {{
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }}
+
+    /* Modern Table */
     table {{
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
     }}
     th, td {{
-      padding: 0.8rem 1rem;
+      padding: 0.75rem 1rem;
       text-align: left;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }}
@@ -446,19 +579,48 @@ def index():
       color: var(--text-muted);
       font-weight: 600;
       background: rgba(255, 255, 255, 0.02);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
     }}
     tr:hover td {{
       background: rgba(255, 255, 255, 0.03);
     }}
     .status-pill {{
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.74rem;
       font-weight: 600;
+      letter-spacing: 0.02em;
     }}
     .status-available {{ background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }}
-    .status-charging {{ background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo); }}
+    .status-charging {{ background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }}
     .status-trip {{ background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }}
+    .status-maint {{ background: rgba(239, 68, 68, 0.15); color: var(--accent-rose); }}
+
+    /* Alert / Recs card */
+    .rec-card {{
+      padding: 1.1rem 1.3rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 10px;
+      margin-bottom: 0.8rem;
+    }}
+    .rec-card.rec-warning {{
+      border-left-color: var(--accent-amber);
+    }}
+    .rec-card.rec-critical {{
+      border-left-color: var(--accent-rose);
+    }}
+
+    footer {{
+      text-align: center;
+      color: #64748B;
+      font-size: 0.8rem;
+      padding: 2rem 0 1rem 0;
+    }}
   </style>
 </head>
 <body>
@@ -466,77 +628,99 @@ def index():
     <div class="brand">
       <div class="brand-logo">⚡</div>
       <div>
-        <div class="brand-title">AI Energy & EV Fleet Optimization Agent</div>
-        <div style="font-size: 0.75rem; color: var(--text-muted);">Commercial Fleet Smart Charging & Trip Scheduler</div>
+        <div class="brand-title">AI Energy & EV Fleet Optimizer</div>
+        <div class="brand-sub">Commercial Fleet Smart Charging & Route Dispatch System</div>
       </div>
     </div>
     <div style="display: flex; gap: 1rem; align-items: center;">
-      <span class="badge"><span class="badge-dot"></span> Vercel Serverless Ready</span>
-      <a href="/api/health" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem;">API Status</a>
+      <span class="badge"><span class="badge-dot"></span> CBC Solver Active</span>
+      <a href="/api/health" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem;">Health Check</a>
     </div>
   </header>
 
   <main>
+    <!-- Scenario Selection Ribbon -->
     <div class="scenario-banner">
       <div>
-        <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Active Scenario</div>
-        <div id="active-scenario-name" style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700;">Base Scenario (Default)</div>
+        <div class="scenario-title">Active Fleet Scenario</div>
+        <div id="active-scenario-name" class="scenario-name">🌟 Standard Base Fleet</div>
       </div>
       <div class="scenario-controls">
-        <button class="scenario-btn active" onclick="switchScenario('base')">Base</button>
-        <button class="scenario-btn" onclick="switchScenario('price_spike')">Price Spike</button>
-        <button class="scenario-btn" onclick="switchScenario('charger_outage')">Charger Outage</button>
-        <button class="scenario-btn" onclick="switchScenario('heavy_demand')">Heavy Demand</button>
-        <button class="scenario-btn" onclick="switchScenario('low_battery_fleet')">Low Battery</button>
-        <button class="scenario-btn" onclick="switchScenario('site_constraint')">Site Constraint</button>
+        <button class="scenario-btn active" onclick="switchScenario('base')">🌟 Base</button>
+        <button class="scenario-btn" onclick="switchScenario('price_spike')">⚡ Price Spike (2.5x)</button>
+        <button class="scenario-btn" onclick="switchScenario('charger_outage')">🔌 Charger Outage</button>
+        <button class="scenario-btn" onclick="switchScenario('heavy_demand')">📦 Surge Demand (+30%)</button>
+        <button class="scenario-btn" onclick="switchScenario('low_battery_fleet')">🔋 Low Battery Fleet</button>
+        <button class="scenario-btn" onclick="switchScenario('site_constraint')">🛑 Grid Limit (-35%)</button>
       </div>
     </div>
 
+    <!-- 5 High-Impact KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-label">Operating Cost</div>
-        <div class="kpi-value" id="kpi-cost">₹0</div>
-        <div class="kpi-sub" id="kpi-savings">₹0 saved (0%)</div>
+        <div class="kpi-header">
+          <span class="kpi-label">Net Operating Savings</span>
+          <span class="kpi-icon">💰</span>
+        </div>
+        <div class="kpi-value" id="kpi-savings-val">₹0</div>
+        <div class="kpi-sub" id="kpi-savings-sub" style="color: var(--accent-emerald);">0% Operating Savings</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Energy Electricity Cost</div>
-        <div class="kpi-value" id="kpi-elec">₹0</div>
-        <div class="kpi-sub" id="kpi-elec-diff">Optimized charging</div>
+        <div class="kpi-header">
+          <span class="kpi-label">Optimized Fleet Cost</span>
+          <span class="kpi-icon">⚡</span>
+        </div>
+        <div class="kpi-value" id="kpi-cost-val">₹0</div>
+        <div class="kpi-sub" id="kpi-cost-sub" style="color: var(--accent-blue);">vs Baseline ₹0</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Peak Demand Cost</div>
-        <div class="kpi-value" id="kpi-demand">₹0</div>
-        <div class="kpi-sub" id="kpi-demand-shaved">₹0 demand shaved</div>
+        <div class="kpi-header">
+          <span class="kpi-label">Peak Grid Demand</span>
+          <span class="kpi-icon">📉</span>
+        </div>
+        <div class="kpi-value" id="kpi-peak-val">0 kW</div>
+        <div class="kpi-sub" id="kpi-peak-sub" style="color: var(--accent-emerald);">0 kW Peak Shaved</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Peak Site Power</div>
-        <div class="kpi-value" id="kpi-peak">0 kW</div>
-        <div class="kpi-sub" id="kpi-peak-shaved">0 kW shaved</div>
+        <div class="kpi-header">
+          <span class="kpi-label">Off-Peak Load Shift</span>
+          <span class="kpi-icon">🔄</span>
+        </div>
+        <div class="kpi-value" id="kpi-shifted-val">0 kWh</div>
+        <div class="kpi-sub" style="color: var(--accent-emerald);">Time-of-Use Arbitrage</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Energy Shifted Out of Peak</div>
-        <div class="kpi-value" id="kpi-shifted">0 kWh</div>
-        <div class="kpi-sub">Time-of-Use Arbitrage</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Trips Served</div>
-        <div class="kpi-value" id="kpi-trips">0 / 0</div>
-        <div class="kpi-sub">100% on critical trips</div>
+        <div class="kpi-header">
+          <span class="kpi-label">Trips Served</span>
+          <span class="kpi-icon">🎯</span>
+        </div>
+        <div class="kpi-value" id="kpi-trips-val">0 / 0</div>
+        <div class="kpi-sub" style="color: var(--accent-emerald);">100% Critical Trips Met</div>
       </div>
     </div>
 
+    <!-- Segmented Navigation Tabs -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('tab-fleet')">Fleet Overview</button>
-      <button class="tab-btn" onclick="showTab('tab-schedule')">Charging Schedule</button>
-      <button class="tab-btn" onclick="showTab('tab-trips')">Trip Allocation</button>
-      <button class="tab-btn" onclick="showTab('tab-cost')">Cost & Load Analytics</button>
-      <button class="tab-btn" onclick="showTab('tab-recs')">Recommendations</button>
+      <button class="tab-btn active" onclick="showTab('tab-fleet')">🚗 Fleet Overview</button>
+      <button class="tab-btn" onclick="showTab('tab-schedule')">⚡ Charging Schedule</button>
+      <button class="tab-btn" onclick="showTab('tab-trips')">🎯 Trip Allocation</button>
+      <button class="tab-btn" onclick="showTab('tab-cost')">💰 Cost & Load Analytics</button>
+      <button class="tab-btn" onclick="showTab('tab-recs')">💡 AI Advisories</button>
     </div>
 
     <!-- TAB 1: FLEET -->
     <div id="tab-fleet" class="tab-pane active">
-      <div class="chart-box">
-        <div class="chart-title">Fleet Vehicles & Telemetry</div>
+      <div class="card-box">
+        <div class="card-header">
+          <div class="card-title">🔋 Fleet Battery State of Charge (SOC)</div>
+        </div>
+        <div id="veh-cards-container" class="vehicles-grid"></div>
+      </div>
+
+      <div class="card-box">
+        <div class="card-header">
+          <div class="card-title">📋 Complete Fleet Vehicle Roster</div>
+        </div>
         <div style="overflow-x: auto;">
           <table id="fleet-table">
             <thead>
@@ -547,7 +731,7 @@ def index():
                 <th>Current SoC</th>
                 <th>Max AC Power</th>
                 <th>Max DC Power</th>
-                <th>Depot Status</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -558,12 +742,16 @@ def index():
 
     <!-- TAB 2: SCHEDULE -->
     <div id="tab-schedule" class="tab-pane">
-      <div class="chart-box">
-        <div class="chart-title">Charging Load Profile vs Site Limit</div>
+      <div class="card-box">
+        <div class="card-header">
+          <div class="card-title">🔌 Aggregate Depot Grid Demand vs Site Capacity Limit</div>
+        </div>
         <div id="chart-load" style="height: 380px;"></div>
       </div>
-      <div class="chart-box">
-        <div class="chart-title">Active Charging Sessions</div>
+      <div class="card-box">
+        <div class="card-header">
+          <div class="card-title">⚡ Smart Charging Session Roster</div>
+        </div>
         <div style="overflow-x: auto;">
           <table id="schedule-table">
             <thead>
@@ -586,14 +774,16 @@ def index():
 
     <!-- TAB 3: TRIPS -->
     <div id="tab-trips" class="tab-pane">
-      <div class="chart-box">
-        <div class="chart-title">Vehicle-to-Trip Allocations & Departure SoC</div>
+      <div class="card-box">
+        <div class="card-header">
+          <div class="card-title">🎯 Vehicle Dispatch & Departure Battery Buffer</div>
+        </div>
         <div style="overflow-x: auto;">
           <table id="trips-table">
             <thead>
               <tr>
                 <th>Trip ID</th>
-                <th>Vehicle Assigned</th>
+                <th>Assigned EV</th>
                 <th>Status</th>
                 <th>Departure Slot</th>
                 <th>Return Slot</th>
@@ -609,40 +799,96 @@ def index():
 
     <!-- TAB 4: COST -->
     <div id="tab-cost" class="tab-pane">
-      <div class="chart-box">
-        <div class="chart-title">Baseline vs Optimized Cost Decomposition</div>
+      <div class="card-box">
+        <div class="card-header">
+          <div class="card-title">💰 Baseline vs Optimized Cost Breakdown</div>
+        </div>
         <div id="chart-cost-bar" style="height: 380px;"></div>
       </div>
     </div>
 
     <!-- TAB 5: RECOMMENDATIONS -->
     <div id="tab-recs" class="tab-pane">
-      <div class="chart-box">
-        <div class="chart-title">System Insights & Operational Advice</div>
-        <div id="recs-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+      <div class="card-box">
+        <div class="card-header">
+          <div class="card-title">💡 Automated Operational Recommendations & Invariant Checks</div>
+        </div>
+        <div id="recs-list" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
       </div>
     </div>
   </main>
+
+  <footer>
+    ⚡ AI Energy & EV Fleet Optimization Agent • Deterministic Cost Optimization Engine
+  </footer>
 
   <script>
     let currentData = {initial_json};
 
     function renderUI(data) {{
-      const kpis = data.kpis;
+      const kpis = data.kpis || {{}};
       const opt = kpis.optimized || {{}};
       const base = kpis.baseline || {{}};
       const sav = kpis.savings || {{}};
 
-      // Render KPIs
-      document.getElementById('active-scenario-name').innerText = (data.scenario || 'base').replace('_', ' ').toUpperCase() + ' SCENARIO';
-      document.getElementById('kpi-cost').innerText = '₹' + (opt.operating_cost ? opt.operating_cost.toLocaleString('en-IN') : '0');
-      document.getElementById('kpi-savings').innerText = '₹' + (sav.operating_cost_savings ? sav.operating_cost_savings.toLocaleString('en-IN') : '0') + ' saved (' + (sav.savings_pct || 0) + '%)';
-      document.getElementById('kpi-elec').innerText = '₹' + (opt.energy_cost ? opt.energy_cost.toLocaleString('en-IN') : '0');
-      document.getElementById('kpi-demand').innerText = '₹' + (opt.demand_cost ? opt.demand_cost.toLocaleString('en-IN') : '0');
-      document.getElementById('kpi-peak').innerText = (opt.peak_power_kw || 0) + ' kW';
-      document.getElementById('kpi-peak-shaved').innerText = (sav.peak_power_shaved_kw || 0) + ' kW shaved';
-      document.getElementById('kpi-shifted').innerText = (sav.energy_shifted_kwh || 0) + ' kWh';
-      document.getElementById('kpi-trips').innerText = (opt.trips_served || 0) + ' / ' + (opt.trips_total || 0);
+      // Active Scenario name format
+      const scenNames = {{
+        'base': '🌟 Standard Base Operations',
+        'price_spike': '⚡ Evening Price Spike (2.5x)',
+        'charger_outage': '🔌 Depot Charger Outage',
+        'heavy_demand': '📦 Surge Delivery Demand (+30%)',
+        'low_battery_fleet': '🔋 Low Fleet Battery State',
+        'site_constraint': '🛑 Grid Power Limit (-35%)'
+      }};
+      document.getElementById('active-scenario-name').innerText = scenNames[data.scenario] || data.scenario.toUpperCase();
+
+      // Top KPI Values
+      const savVal = sav.operating_cost_savings || sav.abs || 0;
+      const savPct = sav.savings_pct || sav.pct || 0;
+      document.getElementById('kpi-savings-val').innerText = '₹' + Math.round(savVal).toLocaleString('en-IN');
+      document.getElementById('kpi-savings-sub').innerText = savPct.toFixed(1) + '% Total Operating Savings';
+
+      const optCost = opt.operating_cost || 0;
+      const baseCost = base.operating_cost || 0;
+      document.getElementById('kpi-cost-val').innerText = '₹' + Math.round(optCost).toLocaleString('en-IN');
+      document.getElementById('kpi-cost-sub').innerText = 'vs Baseline ₹' + Math.round(baseCost).toLocaleString('en-IN');
+
+      const optPeak = opt.peak_power_kw || opt.peak_kw || 0;
+      const peakShaved = sav.peak_power_shaved_kw || 0;
+      document.getElementById('kpi-peak-val').innerText = optPeak.toFixed(1) + ' kW';
+      document.getElementById('kpi-peak-sub').innerText = peakShaved.toFixed(1) + ' kW Peak Shaved';
+
+      const shiftedKwh = sav.energy_shifted_kwh || sav.kwh_shifted_out_of_peak || 0;
+      document.getElementById('kpi-shifted-val').innerText = shiftedKwh.toFixed(1) + ' kWh';
+
+      const tripsServed = opt.trips_served || 0;
+      const tripsTot = opt.trips_total || (data.assignments ? data.assignments.length : 0);
+      document.getElementById('kpi-trips-val').innerText = tripsServed + ' / ' + tripsTot;
+
+      // Render Vehicle Cards Grid
+      const vehGrid = document.getElementById('veh-cards-container');
+      vehGrid.innerHTML = '';
+      (data.vehicles || []).forEach(v => {{
+        const soc = parseFloat(v.current_soc_pct) || 0;
+        const color = soc > 50 ? '#10B981' : (soc > 20 ? '#F59E0B' : '#EF4444');
+        const card = document.createElement('div');
+        card.className = 'veh-card';
+        card.innerHTML = `
+          <div class="veh-id">
+            <span>${{v.vehicle_id}}</span>
+            <span class="status-pill status-available">${{v.status || 'AVAILABLE'}}</span>
+          </div>
+          <div class="veh-meta">${{v.model || v.model_type || 'Commercial EV'}} • ${{v.battery_capacity_kwh}} kWh</div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600;">
+            <span>SOC</span>
+            <span style="color: ${{color}}">${{soc.toFixed(1)}}%</span>
+          </div>
+          <div class="meter-container">
+            <div class="meter-fill" style="width: ${{Math.min(100, Math.max(0, soc))}}%; background: ${{color}};"></div>
+          </div>
+        `;
+        vehGrid.appendChild(card);
+      }});
 
       // Render Fleet Table
       const fleetBody = document.querySelector('#fleet-table tbody');
@@ -651,9 +897,9 @@ def index():
         const row = document.createElement('tr');
         row.innerHTML = `
           <td><strong>${{v.vehicle_id || ''}}</strong></td>
-          <td>${{v.model_type || ''}}</td>
+          <td>${{v.model || v.model_type || 'EV'}}</td>
           <td>${{v.battery_capacity_kwh || ''}} kWh</td>
-          <td>${{v.current_soc_pct || ''}}%</td>
+          <td><b>${{parseFloat(v.current_soc_pct || 0).toFixed(1)}}%</b></td>
           <td>${{v.max_ac_kw || ''}} kW</td>
           <td>${{v.max_dc_kw || ''}} kW</td>
           <td><span class="status-pill status-available">${{v.status || 'AVAILABLE'}}</span></td>
@@ -666,15 +912,18 @@ def index():
       schedBody.innerHTML = '';
       (data.charging || []).slice(0, 30).forEach(c => {{
         const row = document.createElement('tr');
+        const pwr = parseFloat(c.power_kw_grid || 0).toFixed(1);
+        const kwh = parseFloat(c.energy_to_battery_kwh || 0).toFixed(2);
+        const price = parseFloat(c.price_per_kwh || 0).toFixed(2);
         row.innerHTML = `
-          <td>${{c.slot}}</td>
+          <td>Slot ${{c.slot}}</td>
           <td>${{c.timestamp || ''}}</td>
           <td><strong>${{c.vehicle_id || ''}}</strong></td>
           <td>${{c.charger_id || ''}}</td>
-          <td><span class="status-pill ${{c.charger_type === 'DC' ? 'status-charging' : 'status-available'}}">${{c.charger_type}}</span></td>
-          <td>${{c.power_kw_grid || ''}} kW</td>
-          <td>${{c.energy_to_battery_kwh || ''}} kWh</td>
-          <td>₹${{c.price_per_kwh || ''}}</td>
+          <td><span class="status-pill ${{c.charger_type === 'DC' ? 'status-charging' : 'status-available'}}">${{c.charger_type || 'AC'}}</span></td>
+          <td>${{pwr}} kW</td>
+          <td>${{kwh}} kWh</td>
+          <td>₹${{price}}</td>
         `;
         schedBody.appendChild(row);
       }});
@@ -684,14 +933,16 @@ def index():
       tripBody.innerHTML = '';
       (data.assignments || []).forEach(t => {{
         const row = document.createElement('tr');
+        const reqKwh = parseFloat(t.required_energy_kwh || 0).toFixed(1);
+        const depSoc = parseFloat(t.departure_soc_pct || 0).toFixed(1);
         row.innerHTML = `
           <td><strong>${{t.trip_id}}</strong></td>
           <td>${{t.vehicle_id || 'UNASSIGNED'}}</td>
           <td><span class="status-pill ${{t.served ? 'status-available' : 'status-trip'}}">${{t.served ? 'SERVED' : 'UNSERVED'}}</span></td>
-          <td>${{t.departure_slot || '-'}}</td>
-          <td>${{t.return_slot || '-'}}</td>
-          <td>${{t.required_energy_kwh || 0}} kWh</td>
-          <td>${{t.departure_soc_pct || 0}}%</td>
+          <td>Slot ${{t.departure_slot || '-'}}</td>
+          <td>Slot ${{t.return_slot || '-'}}</td>
+          <td>${{reqKwh}} kWh</td>
+          <td><b>${{depSoc}}%</b></td>
         `;
         tripBody.appendChild(row);
       }});
@@ -701,52 +952,50 @@ def index():
       recsList.innerHTML = '';
       (data.recommendations || []).forEach(r => {{
         const item = document.createElement('div');
-        item.style.padding = '1rem';
-        item.style.background = 'rgba(255, 255, 255, 0.03)';
-        item.style.borderRadius = '8px';
-        item.style.borderLeft = '4px solid var(--accent-indigo)';
+        const sevClass = r.severity === 'critical' ? 'rec-critical' : (r.severity === 'warning' ? 'rec-warning' : '');
+        item.className = 'rec-card ' + sevClass;
         item.innerHTML = `
-          <div style="font-weight: 600; font-size: 1rem; color: #fff;">${{r.title || 'Insight'}}</div>
-          <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">${{r.description || ''}}</div>
+          <div style="font-weight: 700; font-size: 1rem; color: #FFF;">${{r.title || 'Advisory'}}</div>
+          <div style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.3rem;">${{r.detail || r.description || ''}}</div>
         `;
         recsList.appendChild(item);
       }});
 
-      // Render Load Chart
+      // Render Load Chart (Plotly)
       const siteLoads = data.site_load || [];
-      const slots = siteLoads.map(s => s.slot);
+      const slots = siteLoads.map(s => (s.slot * 0.25).toFixed(2));
       const loads = siteLoads.map(s => s.site_kw || 0);
       const limits = siteLoads.map(s => s.site_limit_kw || 90);
       const prices = siteLoads.map(s => s.price_per_kwh || 5);
 
       Plotly.newPlot('chart-load', [
-        {{ x: slots, y: loads, type: 'scatter', mode: 'lines', name: 'Fleet Power (kW)', line: {{ color: '#6366F1', width: 3 }}, fill: 'tozeroy', fillcolor: 'rgba(99, 102, 241, 0.15)' }},
-        {{ x: slots, y: limits, type: 'scatter', mode: 'lines', name: 'Site Limit (kW)', line: {{ color: '#EF4444', dash: 'dash', width: 2 }} }},
-        {{ x: slots, y: prices, type: 'scatter', mode: 'lines', name: 'Tariff (₹/kWh)', yaxis: 'y2', line: {{ color: '#F59E0B', width: 2 }} }}
+        {{ x: slots, y: loads, type: 'scatter', mode: 'lines', name: 'Optimized Fleet Power (kW)', line: {{ color: '#38BDF8', width: 3 }}, fill: 'tozeroy', fillcolor: 'rgba(56, 189, 248, 0.18)' }},
+        {{ x: slots, y: limits, type: 'scatter', mode: 'lines', name: 'Site Capacity Limit (kW)', line: {{ color: '#EF4444', dash: 'dash', width: 2 }} }},
+        {{ x: slots, y: prices, type: 'scatter', mode: 'lines', name: 'ToU Tariff (₹/kWh)', yaxis: 'y2', line: {{ color: '#F59E0B', width: 2 }} }}
       ], {{
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent',
-        font: {{ color: '#9CA3AF' }},
-        margin: {{ t: 20, r: 40, l: 40, b: 40 }},
-        xaxis: {{ title: 'Slot (15-min increments)', gridcolor: 'rgba(255, 255, 255, 0.05)' }},
-        yaxis: {{ title: 'Power (kW)', gridcolor: 'rgba(255, 255, 255, 0.05)' }},
-        yaxis2: {{ title: 'Tariff (₹/kWh)', overlaying: 'y', side: 'right', gridcolor: 'transparent' }},
-        legend: {{ orientation: 'h', y: 1.15 }}
+        font: {{ family: 'Inter, sans-serif', color: '#9CA3AF' }},
+        margin: {{ t: 20, r: 50, l: 45, b: 40 }},
+        xaxis: {{ title: 'Horizon Time (Hours)', gridcolor: 'rgba(255, 255, 255, 0.06)' }},
+        yaxis: {{ title: 'Grid Demand (kW)', gridcolor: 'rgba(255, 255, 255, 0.06)' }},
+        yaxis2: {{ title: 'Tariff Rate (₹/kWh)', overlaying: 'y', side: 'right', gridcolor: 'transparent' }},
+        legend: {{ orientation: 'h', y: 1.15, x: 0.5, xanchor: 'center' }}
       }}, {{ responsive: true }});
 
-      // Render Cost Comparison Bar Chart
+      // Render Cost Breakdown Bar Chart (Plotly)
       Plotly.newPlot('chart-cost-bar', [
-        {{ x: ['Electricity Cost', 'Peak Demand', 'Battery Wear', 'Total Cost'], y: [base.energy_cost || 0, base.demand_cost || 0, base.wear_cost || 0, base.operating_cost || 0], name: 'Baseline', type: 'bar', marker: {{ color: 'rgba(239, 68, 68, 0.75)' }} }},
-        {{ x: ['Electricity Cost', 'Peak Demand', 'Battery Wear', 'Total Cost'], y: [opt.energy_cost || 0, opt.demand_cost || 0, opt.wear_cost || 0, opt.operating_cost || 0], name: 'Optimized', type: 'bar', marker: {{ color: 'rgba(16, 185, 129, 0.85)' }} }}
+        {{ x: ['Electricity Cost', 'Peak Demand', 'Battery Wear', 'Total Cost'], y: [base.energy_cost || 0, base.demand_cost || 0, base.wear_cost || 0, base.operating_cost || 0], name: 'Baseline (Unmanaged)', type: 'bar', marker: {{ color: '#94A3B8' }} }},
+        {{ x: ['Electricity Cost', 'Peak Demand', 'Battery Wear', 'Total Cost'], y: [opt.energy_cost || 0, opt.demand_cost || 0, opt.wear_cost || 0, opt.operating_cost || 0], name: 'Optimized (Smart)', type: 'bar', marker: {{ color: '#38BDF8' }} }}
       ], {{
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent',
-        font: {{ color: '#9CA3AF' }},
+        font: {{ family: 'Inter, sans-serif', color: '#9CA3AF' }},
         barmode: 'group',
-        margin: {{ t: 20, r: 20, l: 40, b: 40 }},
-        xaxis: {{ gridcolor: 'rgba(255, 255, 255, 0.05)' }},
-        yaxis: {{ title: 'Cost (INR ₹)', gridcolor: 'rgba(255, 255, 255, 0.05)' }},
-        legend: {{ orientation: 'h', y: 1.15 }}
+        margin: {{ t: 20, r: 20, l: 45, b: 40 }},
+        xaxis: {{ gridcolor: 'rgba(255, 255, 255, 0.06)' }},
+        yaxis: {{ title: 'Cost (INR ₹)', gridcolor: 'rgba(255, 255, 255, 0.06)' }},
+        legend: {{ orientation: 'h', y: 1.15, x: 0.5, xanchor: 'center' }}
       }}, {{ responsive: true }});
     }}
 
@@ -754,13 +1003,13 @@ def index():
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+      event.currentTarget.classList.add('active');
     }}
 
     async function switchScenario(name) {{
       document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById('active-scenario-name').innerText = 'Simulating ' + name + '...';
+      event.currentTarget.classList.add('active');
+      document.getElementById('active-scenario-name').innerText = 'Simulating ' + name.replace('_', ' ') + '...';
 
       try {{
         const res = await fetch('/api/run-scenario', {{

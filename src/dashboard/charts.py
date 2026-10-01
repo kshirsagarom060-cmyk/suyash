@@ -8,16 +8,45 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-# Curated harmonious color palette
-COLOR_OPTIMIZED = "#3B82F6"   # Electric Blue
-COLOR_BASELINE = "#9CA3AF"    # Cool Slate Grey
+# Curated harmonious high-contrast modern palette
+COLOR_OPTIMIZED = "#38BDF8"   # Electric Sky Blue
+COLOR_BASELINE = "#94A3B8"    # Cool Slate Grey
 COLOR_OFFPEAK = "#10B981"     # Emerald Green
 COLOR_SHOULDER = "#F59E0B"    # Amber Gold
-COLOR_PEAK = "#EF4444"        # Crimson Coral
+COLOR_PEAK = "#EF4444"        # Crimson Rose
 COLOR_DC = "#8B5CF6"          # Purple Violet
 COLOR_AC = "#06B6D4"          # Cyan Teal
-COLOR_BG = "#111827"          # Dark Slate
-COLOR_CARD = "#1F2937"        # Dark Card
+COLOR_BG = "#0B0F19"          # Dark Obsidian
+COLOR_CARD = "#111827"        # Dark Card
+GRID_COLOR = "rgba(255, 255, 255, 0.06)"
+
+
+def _apply_theme(fig: go.Figure, title: str, x_title: Optional[str] = None, y_title: Optional[str] = None) -> go.Figure:
+    """Applies modern dark aesthetic, soft gridlines, and typography to any figure."""
+    fig.update_layout(
+        template="plotly_dark",
+        title={"text": f"<b>{title}</b>", "font": {"family": "Outfit, Inter, sans-serif", "size": 15, "color": "#F9FAFB"}},
+        paper_bgcolor="rgba(11, 15, 25, 0.7)",
+        plot_bgcolor="rgba(11, 15, 25, 0.7)",
+        font={"family": "Inter, sans-serif", "color": "#9CA3AF"},
+        xaxis={
+            "title": x_title,
+            "gridcolor": GRID_COLOR,
+            "zerolinecolor": GRID_COLOR,
+            "showline": True,
+            "linecolor": GRID_COLOR,
+        } if x_title else {"gridcolor": GRID_COLOR, "zerolinecolor": GRID_COLOR},
+        yaxis={
+            "title": y_title,
+            "gridcolor": GRID_COLOR,
+            "zerolinecolor": GRID_COLOR,
+            "showline": True,
+            "linecolor": GRID_COLOR,
+        } if y_title else {"gridcolor": GRID_COLOR, "zerolinecolor": GRID_COLOR},
+        margin={"l": 45, "r": 25, "t": 48, "b": 40},
+        hoverlabel={"bgcolor": "#1F2937", "font_size": 12, "font_family": "Inter, sans-serif", "font_color": "#F9FAFB"},
+    )
+    return fig
 
 
 def empty_fig(title: str = "No data available") -> go.Figure:
@@ -34,7 +63,7 @@ def empty_fig(title: str = "No data available") -> go.Figure:
             "xref": "paper",
             "yref": "paper",
             "showarrow": False,
-            "font": {"size": 16, "color": "#9CA3AF"},
+            "font": {"size": 15, "color": "#9CA3AF", "family": "Inter, sans-serif"},
         }],
         margin={"l": 20, "r": 20, "t": 30, "b": 20},
     )
@@ -60,7 +89,7 @@ def soc_bar(vehicles_df: pd.DataFrame, reserve_pct: float = 15.0, ceiling_pct: f
         text=[f"{val:.1f}%" for val in df["current_soc_pct"]],
         textposition="auto",
         name="Current SOC (%)",
-        hovertemplate="<b>%{x}</b><br>SOC: %{y:.1f}%<extra></extra>",
+        hovertemplate="<b>%{x}</b><br>State of Charge: <b>%{y:.1f}%</b><extra></extra>",
     ))
 
     fig.add_hline(
@@ -78,17 +107,8 @@ def soc_bar(vehicles_df: pd.DataFrame, reserve_pct: float = 15.0, ceiling_pct: f
         annotation_position="top right",
     )
 
-    fig.update_layout(
-        template="plotly_dark",
-        title="Fleet Initial State of Charge (SOC) Distribution",
-        xaxis_title="Vehicle ID",
-        yaxis_title="State of Charge (%)",
-        yaxis_range=[0, 105],
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    fig.update_layout(yaxis_range=[0, 105])
+    return _apply_theme(fig, "Fleet Initial State of Charge (SOC) Distribution", "Vehicle ID", "State of Charge (%)")
 
 
 def demand_vs_supply(demand_by_hour: pd.DataFrame, n_usable_vehicles: int) -> go.Figure:
@@ -110,21 +130,12 @@ def demand_vs_supply(demand_by_hour: pd.DataFrame, n_usable_vehicles: int) -> go
         y=n_usable_vehicles,
         line_dash="dot",
         line_color="#60A5FA",
-        annotation_text=f"Total Usable Fleet ({n_usable_vehicles} vehicles)",
+        annotation_text=f"Usable Fleet ({n_usable_vehicles} EVs)",
         annotation_position="top left",
     )
 
-    fig.update_layout(
-        barmode="stack",
-        template="plotly_dark",
-        title="Hourly Trip Demand vs Available Fleet Supply",
-        xaxis_title="Hour of Day",
-        yaxis_title="Trip Departures (Count)",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    fig.update_layout(barmode="stack", legend={"orientation": "h", "y": 1.12, "x": 0.5, "xanchor": "center"})
+    return _apply_theme(fig, "Hourly Trip Demand vs Available Fleet Supply", "Hour of Day", "Trip Departures (Count)")
 
 
 def charging_gantt(
@@ -185,17 +196,8 @@ def charging_gantt(
                     hovertemplate=f"<b>{v}</b><br>Trip {t_id}<br>Duration: {dur_h:.1f}h<extra></extra>",
                 ))
 
-    fig.update_layout(
-        barmode="overlay",
-        template="plotly_dark",
-        title=f"Fleet Charging Schedule & Trip Execution ({plan.capitalize()})",
-        xaxis_title="Timeline (Hours into Horizon)",
-        yaxis_title="Vehicle",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 60, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    fig.update_layout(barmode="overlay")
+    return _apply_theme(fig, f"Fleet Charging Schedule & Trip Execution ({plan.capitalize()})", "Timeline (Hours into Horizon)", "Vehicle")
 
 
 def price_band(tariffs_df: pd.DataFrame) -> go.Figure:
@@ -213,19 +215,10 @@ def price_band(tariffs_df: pd.DataFrame) -> go.Figure:
         mode="lines",
         line={"shape": "hv", "color": "#FACC15", "width": 3},
         name="Price / kWh",
-        hovertemplate="Time: %{x:.2f}h<br>Price: %{y:.2f}/kWh<extra></extra>",
+        hovertemplate="Time: %{x:.2f}h<br>Tariff: <b>₹%{y:.2f}/kWh</b><extra></extra>",
     ))
 
-    fig.update_layout(
-        template="plotly_dark",
-        title="Time-of-Use Electricity Tariff Schedule",
-        xaxis_title="Planning Horizon (Hours)",
-        yaxis_title="Price / kWh",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    return _apply_theme(fig, "Time-of-Use Electricity Tariff Schedule", "Planning Horizon (Hours)", "Price (₹ / kWh)")
 
 
 def site_load(site_load_df: pd.DataFrame, plan_toggle: str = "compare", site_limit_kw: float = 90.0) -> go.Figure:
@@ -244,6 +237,7 @@ def site_load(site_load_df: pd.DataFrame, plan_toggle: str = "compare", site_lim
                 mode="lines",
                 name="Baseline Site Power",
                 line={"color": COLOR_BASELINE, "width": 2, "dash": "dash"},
+                hovertemplate="Baseline: %{y:.1f} kW<extra></extra>",
             ))
 
     if plan_toggle in ["optimized", "compare"]:
@@ -254,29 +248,22 @@ def site_load(site_load_df: pd.DataFrame, plan_toggle: str = "compare", site_lim
                 y=opt_df["site_kw"],
                 mode="lines",
                 fill="tozeroy",
-                fillcolor="rgba(59, 130, 246, 0.2)",
+                fillcolor="rgba(56, 189, 248, 0.2)",
                 name="Optimized Site Power",
                 line={"color": COLOR_OPTIMIZED, "width": 3},
+                hovertemplate="Optimized: <b>%{y:.1f} kW</b><extra></extra>",
             ))
 
     fig.add_hline(
         y=site_limit_kw,
         line_dash="dot",
         line_color=COLOR_PEAK,
-        annotation_text=f"Site Capacity Limit ({site_limit_kw:.1f} kW)",
+        annotation_text=f"Depot Grid Limit ({site_limit_kw:.1f} kW)",
         annotation_position="top right",
     )
 
-    fig.update_layout(
-        template="plotly_dark",
-        title="Aggregate Depot Power Demand vs Site Capacity Limit",
-        xaxis_title="Horizon Timeline (Hours)",
-        yaxis_title="Grid Power Demand (kW)",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    fig.update_layout(legend={"orientation": "h", "y": 1.12, "x": 0.5, "xanchor": "center"})
+    return _apply_theme(fig, "Aggregate Depot Power Demand vs Site Capacity Limit", "Horizon Timeline (Hours)", "Grid Power Demand (kW)")
 
 
 def vehicle_soc_trajectory(
@@ -302,10 +289,10 @@ def vehicle_soc_trajectory(
         x=hours,
         y=v_soc["energy_kwh"],
         mode="lines+markers",
-        line={"color": COLOR_OPTIMIZED, "width": 3},
-        marker={"size": 4},
-        name=f"{vehicle_id} Stored Energy (kWh)",
-        hovertemplate="Time: %{x:.2f}h<br>Energy: %{y:.2f} kWh<extra></extra>",
+        line={"color": COLOR_OPTIMIZED, "width": 3, "shape": "spline"},
+        marker={"size": 4, "color": COLOR_OPTIMIZED},
+        name=f"{vehicle_id} Energy (kWh)",
+        hovertemplate="Time: %{x:.2f}h<br>Energy: <b>%{y:.2f} kWh</b><extra></extra>",
     ))
 
     if reserve_kwh is not None:
@@ -313,16 +300,7 @@ def vehicle_soc_trajectory(
     if ceiling_kwh is not None:
         fig.add_hline(y=ceiling_kwh, line_dash="dash", line_color=COLOR_SHOULDER, annotation_text=f"Ceiling ({ceiling_kwh:.1f} kWh)")
 
-    fig.update_layout(
-        template="plotly_dark",
-        title=f"Vehicle {vehicle_id} Battery Energy Trajectory ({plan.capitalize()})",
-        xaxis_title="Horizon Timeline (Hours)",
-        yaxis_title="Stored Energy (kWh)",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    return _apply_theme(fig, f"Vehicle {vehicle_id} Battery Trajectory ({plan.capitalize()})", "Timeline (Hours)", "Stored Energy (kWh)")
 
 
 def cost_breakdown(kpis: dict[str, Any]) -> go.Figure:
@@ -343,7 +321,7 @@ def cost_breakdown(kpis: dict[str, Any]) -> go.Figure:
         x=categories,
         y=b_vals,
         marker_color=COLOR_BASELINE,
-        text=[f"{v:.0f}" for v in b_vals],
+        text=[f"₹{v:,.0f}" for v in b_vals],
         textposition="auto",
     ))
     fig.add_trace(go.Bar(
@@ -351,20 +329,12 @@ def cost_breakdown(kpis: dict[str, Any]) -> go.Figure:
         x=categories,
         y=o_vals,
         marker_color=COLOR_OPTIMIZED,
-        text=[f"{v:.0f}" for v in o_vals],
+        text=[f"₹{v:,.0f}" for v in o_vals],
         textposition="auto",
     ))
 
-    fig.update_layout(
-        barmode="group",
-        template="plotly_dark",
-        title="Cost Category Comparison: Baseline vs Optimized",
-        yaxis_title="Cost Amount",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    fig.update_layout(barmode="group", legend={"orientation": "h", "y": 1.12, "x": 0.5, "xanchor": "center"})
+    return _apply_theme(fig, "Cost Category Comparison: Baseline vs Optimized", "", "Cost Amount (INR ₹)")
 
 
 def energy_by_period(kpis: dict[str, Any]) -> go.Figure:
@@ -385,16 +355,8 @@ def energy_by_period(kpis: dict[str, Any]) -> go.Figure:
     fig.add_trace(go.Bar(name="Shoulder", x=plans, y=shoulders, marker_color=COLOR_SHOULDER))
     fig.add_trace(go.Bar(name="Peak (Expensive)", x=plans, y=peaks, marker_color=COLOR_PEAK))
 
-    fig.update_layout(
-        barmode="stack",
-        template="plotly_dark",
-        title="Energy Charged by Tariff Window (kWh)",
-        yaxis_title="Energy Charged (kWh)",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    fig.update_layout(barmode="stack", legend={"orientation": "h", "y": 1.12, "x": 0.5, "xanchor": "center"})
+    return _apply_theme(fig, "Energy Charged by Tariff Window (kWh)", "", "Energy Charged (kWh)")
 
 
 def charger_utilization(kpis: dict[str, Any]) -> go.Figure:
@@ -411,16 +373,8 @@ def charger_utilization(kpis: dict[str, Any]) -> go.Figure:
         textposition="auto",
     ))
 
-    fig.update_layout(
-        template="plotly_dark",
-        title="Charger Utilization Rate (%)",
-        yaxis_title="Occupancy Utilization (%)",
-        yaxis_range=[0, 105],
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    fig.update_layout(yaxis_range=[0, 105])
+    return _apply_theme(fig, "Charger Utilization Rate (%)", "", "Occupancy Utilization (%)")
 
 
 def margin_hist(
@@ -460,19 +414,10 @@ def margin_hist(
         x=margins,
         nbinsx=15,
         marker_color=COLOR_OPTIMIZED,
-        opacity=0.8,
+        opacity=0.85,
     ))
 
-    fig.update_layout(
-        template="plotly_dark",
-        title="Departure Safety Buffer Distribution (kWh above Minimum Reserve)",
-        xaxis_title="Departure Buffer (kWh)",
-        yaxis_title="Number of Trips",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    return _apply_theme(fig, "Departure Safety Buffer Distribution (kWh above Minimum Reserve)", "Departure Buffer (kWh)", "Number of Trips")
 
 
 def trip_timeline(assignments_df: pd.DataFrame, trips_df: pd.DataFrame, plan: str = "optimized") -> go.Figure:
@@ -506,16 +451,7 @@ def trip_timeline(assignments_df: pd.DataFrame, trips_df: pd.DataFrame, plan: st
                 hovertemplate=f"<b>Trip {t_id}</b><br>Vehicle: {v}<br>Start: {dep_h:.1f}h<br>Duration: {dur_h:.1f}h<br>Priority: {pri}<extra></extra>",
             ))
 
-    fig.update_layout(
-        template="plotly_dark",
-        title=f"Vehicle-to-Trip Assignment Timeline ({plan.capitalize()})",
-        xaxis_title="Horizon Time (Hours)",
-        yaxis_title="Assigned Vehicle",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 60, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    return _apply_theme(fig, f"Vehicle-to-Trip Assignment Timeline ({plan.capitalize()})", "Horizon Time (Hours)", "Assigned Vehicle")
 
 
 def tradeoff_curve(tradeoff_data: list[dict[str, Any]]) -> go.Figure:
@@ -529,17 +465,10 @@ def tradeoff_curve(tradeoff_data: list[dict[str, Any]]) -> go.Figure:
         x=df["parameter_value"],
         y=df["total_cost"],
         mode="lines+markers",
-        line={"color": COLOR_OPTIMIZED, "width": 3},
+        line={"color": COLOR_OPTIMIZED, "width": 3, "shape": "spline"},
+        marker={"size": 6, "color": COLOR_OPTIMIZED},
         name="Total Cost",
+        hovertemplate="Parameter: %{x}<br>Total Cost: <b>₹%{y:,.0f}</b><extra></extra>",
     ))
 
-    fig.update_layout(
-        template="plotly_dark",
-        title="Parameter Sensitivity Trade-off Curve",
-        xaxis_title="Parameter Value",
-        yaxis_title="Total Operating Cost",
-        paper_bgcolor=COLOR_BG,
-        plot_bgcolor=COLOR_BG,
-        margin={"l": 40, "r": 20, "t": 40, "b": 40},
-    )
-    return fig
+    return _apply_theme(fig, "Parameter Sensitivity Trade-off Curve", "Parameter Value", "Total Operating Cost (INR ₹)")
